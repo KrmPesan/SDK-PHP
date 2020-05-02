@@ -73,6 +73,43 @@ class Client
         // setup url
         $buildUrl = $this->apiUrl . '/' . $url;
 
+        // set default header
+        $headers = array();
+        $headers[] = 'Accept: application/json';
+        $headers[] = 'Authorization: Bearer '. $this->token;
+
+        // use custom header if not null
+        if ($this->customHeader) {
+            $headers = $this->customHeader;
+        }
+
+        if (
+            isset($form['image']) xor
+            isset($form['document'])
+        ) {
+            // update header type
+            $headers[] = 'Content-Type: multipart/form-data';
+
+            // update form data
+            $fileData = $form['image'] ?? $form['document'];
+
+            // parse file and get file information
+            // https://www.php.net/manual/en/function.realpath
+            $file = realpath($fileData);
+            // https://www.php.net/manual/en/function.basename
+            $filename = basename($file);
+            // https://www.php.net/manual/en/function.mime-content-type
+            $filemime = mime_content_type($file);
+
+            if (isset($form['image'])) {
+                $form['image'] = curl_file_create($file, $filemime, $filename);
+            } else {
+                $form['document'] = curl_file_create($file, $filemime, $filename);
+            }
+        } else {
+            $headers[] = 'Content-Type: application/json';
+        }
+
         // build curl instance
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $buildUrl);
@@ -80,6 +117,7 @@ class Client
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYSTATUS, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         // check action type
         if ($type == 'POST') {
@@ -93,19 +131,6 @@ class Client
         } else {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
         }
-
-        $headers = array();
-        $headers[] = 'Content-Type: application/json';
-        $headers[] = 'Accept: application/json';
-        $headers[] = 'Authorization: Bearer '. $this->token;
-
-        // use custom header if not null
-        if ($this->customHeader) {
-            $headers = $this->customHeader;
-        }
-
-        // set curl header
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         // running curl
         $result = curl_exec($ch);
@@ -243,10 +268,48 @@ class Client
     {
         // build form
         $form = json_encode([
-            'phone' => $to,
-            'message' => $message
+            'phone'     => $to,
+            'message'   => $message
         ]);
 
         return $this->action('POST', 'api/v2/message/send-text', $form);
+    }
+
+    /**
+     * Send Message Image
+     *
+     * @param number $to
+     * @param file $image
+     * @param string $caption
+     * @return void
+     */
+    public function sendMessageImage($to, $image, $caption = null)
+    {
+        // build form
+        $form = array(
+            'phone'     => $to,
+            'image'     => $image,
+            'caption'   => $caption
+        );
+
+        return $this->action('POST', 'api/v2/message/send-image', $form);
+    }
+
+    /**
+     * Send Message Document
+     *
+     * @param number $to
+     * @param file $document
+     * @return void
+     */
+    public function sendMessageDocument($to, $document)
+    {
+        // build form
+        $form = [
+            'phone'     => $to,
+            'document'  => $document
+        ];
+
+        return $this->action('POST', 'api/v2/message/send-document', $form);
     }
 }
