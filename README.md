@@ -18,7 +18,7 @@ $wa = new Client([
 ]);
 ```
 
-## Kirim Pesan
+## Kirim Pesan Text
 
 ### Request
 ```php
@@ -45,5 +45,69 @@ stdClass Object
             [updated_at] => 2020-05-02 13:14:55
             [created_at] => 2020-05-02 13:14:55
         )
+)
+```
+
+## Kirim Pesan Image (File Upload)
+
+### Request
+```php
+$wa->sendMessageImage('081212341234', 'sample-image.png', 'Ini contoh gambar')
+```
+
+### Response
+```
+stdClass Object
+(
+    [code] => 200
+    [message] => Success. Messages will be sent automatically according to the queue and synchronization of contacts. At least 15 minutes for new contacts.
+    [data] => stdClass Object
+        (
+            [queue_id] => 2339
+            [uuid] => 311103a1-4772-4835-a6e6-d1bfb7ec94ad
+            [user_id] => 9bd69294-5574-461e-a49d-76035b4858e5
+            [device_id] => b066a260-57d0-438f-8ee2-2df06aea6afa
+            [phone] => 6283140103081
+            [message] => Ini contoh gambar
+            [attachment_id] => fd2f6874-8ee8-4e10-9700-875d933c980e
+            [type] => Image
+            [category] => Outbox
+            [status] => Pending
+            [updated_at] => 2020-05-02 14:49:00
+            [created_at] => 2020-05-02 14:49:00
+        )
+
+)
+```
+
+## Kirim Pesan Document (File Upload)
+
+### Request
+```php
+$wa->sendMessageDocument('081212341234', 'sample-document.pdf')
+```
+
+### Response
+```
+stdClass Object
+(
+    [code] => 200
+    [message] => Success. Messages will be sent automatically according to the queue and synchronization of contacts. At least 15 minutes for new contacts.
+    [data] => stdClass Object
+        (
+            [queue_id] => 2341
+            [uuid] => e7204723-9d6a-4f42-a452-99574409657f
+            [user_id] => 9bd69294-5574-461e-a49d-76035b4858e5
+            [device_id] => b066a260-57d0-438f-8ee2-2df06aea6afa
+            [phone] => 6283140103081
+            [message] => sample-document.pdf
+            [attachment_id] => 9a8339b2-ab8b-4e63-8ab7-51fb4611d6fe
+            [type] => Document
+            [category] => Outbox
+            [status] => Pending
+            [updated_at] => 2020-05-02 14:51:09
+            [created_at] => 2020-05-02 14:51:09
+        )
+
 )
 ```
