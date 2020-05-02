@@ -1,11 +1,14 @@
 <?php
-
+// panggil file source
 require('src/Client.php');
 
+// panggil class
 use KrmPesan\Client;
 
+// setting konfigurasi
 $wa = new Client([
-    'region' => 'region01'
+    'region' => '01',
+    'token' => 'your-token-here'
 ]);
 
-echo $wa->deviceInfo();
+print_r(json_decode($wa->sendMessageText('6283140103081', 'Hai')));
