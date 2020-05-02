@@ -2,6 +2,8 @@
 
 namespace KrmPesan;
 
+use Exception;
+
 class Client
 {
     /**
@@ -28,7 +30,16 @@ class Client
      */
     protected $regionPanel = [
         '01'    => 'https://region01.krmpesan.com',
-        'test'  => 'http://krmpesan.test'
+        '02'    => 'https://region02.krmpesan.com',
+        '03'    => 'https://region03.krmpesan.com',
+        '04'    => 'https://region04.krmpesan.com',
+        '05'    => 'https://region05.krmpesan.com',
+        '06'    => 'https://region06.krmpesan.com',
+        '07'    => 'https://region07.krmpesan.com',
+        '08'    => 'https://region08.krmpesan.com',
+        '09'    => 'https://region09.krmpesan.com',
+        '10'    => 'https://region10.krmpesan.com',
+        'test'  => 'http://krmpesan.test',
     ];
 
     /**
@@ -47,7 +58,7 @@ class Client
     {
         // Select Region
         $this->apiUrl   = $this->regionPanel[$data['region']];
-        
+
         // Custom Set Timeout
         $this->timeout  = $data['timeout'] ?? 30;
 
@@ -74,9 +85,9 @@ class Client
         $buildUrl = $this->apiUrl . '/' . $url;
 
         // set default header
-        $headers = array();
+        $headers   = [];
         $headers[] = 'Accept: application/json';
-        $headers[] = 'Authorization: Bearer '. $this->token;
+        $headers[] = 'Authorization: Bearer ' . $this->token;
 
         // use custom header if not null
         if ($this->customHeader) {
@@ -137,7 +148,7 @@ class Client
 
         // throw error
         if (curl_errno($ch)) {
-            throw curl_error($ch);
+            throw new Exception(curl_error($ch));
         }
 
         // stop connection
@@ -191,7 +202,7 @@ class Client
         if ($page) {
             $url = 'api/v2/message?page=' . $page;
         }
-        
+
         return $this->action('GET', $url);
     }
 
@@ -208,7 +219,7 @@ class Client
         if ($page) {
             $url = 'api/v2/message/inbox?page=' . $page;
         }
-        
+
         return $this->action('GET', $url);
     }
 
@@ -225,7 +236,7 @@ class Client
         if ($page) {
             $url = 'api/v2/message/outbox?page=' . $page;
         }
-        
+
         return $this->action('GET', $url);
     }
 
@@ -242,7 +253,7 @@ class Client
         if ($page) {
             $url = 'api/v2/message/forward?page=' . $page;
         }
-        
+
         return $this->action('GET', $url);
     }
 
@@ -269,7 +280,7 @@ class Client
         // build form
         $form = json_encode([
             'phone'     => $to,
-            'message'   => $message
+            'message'   => $message,
         ]);
 
         return $this->action('POST', 'api/v2/message/send-text', $form);
@@ -286,11 +297,11 @@ class Client
     public function sendMessageImage($to, $image, $caption = null)
     {
         // build form
-        $form = array(
+        $form = [
             'phone'     => $to,
             'image'     => $image,
-            'caption'   => $caption
-        );
+            'caption'   => $caption,
+        ];
 
         return $this->action('POST', 'api/v2/message/send-image', $form);
     }
@@ -307,9 +318,45 @@ class Client
         // build form
         $form = [
             'phone'     => $to,
-            'document'  => $document
+            'document'  => $document,
         ];
 
         return $this->action('POST', 'api/v2/message/send-document', $form);
+    }
+
+    /**
+     * Send Message Bulk by Number
+     *
+     * @param array $to
+     * @param text $message
+     * @return void
+     */
+    public function sendBulkNumber(array $to, $message)
+    {
+        // build form
+        $form = [
+            'phone'    => $to,
+            'message'  => $document,
+        ];
+
+        return $this->action('POST', 'api/v2/message/send-bulk', $form);
+    }
+
+    /**
+     * Send Message Bulk by Group ID
+     *
+     * @param uuid $groupId
+     * @param text $message
+     * @return void
+     */
+    public function sendBulkGroup($groupId, $message)
+    {
+        // build form
+        $form = [
+            'groupid'  => $groupId,
+            'message'  => $document,
+        ];
+
+        return $this->action('POST', 'api/v2/message/send-bulk', $form);
     }
 }
