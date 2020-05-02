@@ -1,6 +1,20 @@
 # KrmPesan SDK PHP
 
+## Installasi
+
+### Install via Composer
+```bash
+composer require krmpesan/sdk
+```
+
+### Install Manual
+1. Download file dari repository ini [DI SINI](https://github.com/KrmPesan/SDK-PHP/releases)
+2. Copy File `src/Client.php`
+3. Done.
+
 # Cara Penggunaan
+
+PENTING: Nomor yang tercantum hanya sebagai sample, bukan nomor kami atau nomor sesungguhnya.
 
 ## Setting Konfigurasi
 ```php
