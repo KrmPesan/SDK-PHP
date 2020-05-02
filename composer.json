@@ -1,0 +1,24 @@
+{
+    "name": "krmpesan/sdk",
+    "description": "kirim pesan sdk php",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "KrmPesan",
+            "email": "support@krmpesan.com"
+        }
+    ],
+    "homepage": "https://github.com/KrmPesan/SDK-PHP",
+    "support": {
+        "issues": "https://github.com/KrmPesan/SDK-PHP/issues",
+        "source": "https://github.com/KrmPesan/SDK-PHP"
+    },
+    "minimum-stability": "stable",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "KrmPesan\\": "src/"
+        }
+    }
+}
