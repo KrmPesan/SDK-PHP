@@ -1,25 +1,44 @@
 <?php
+/**
+ * KrmPesan PHP SDK
+ *
+ * @package     KrmPesan PHP SDK
+ * @version     1.1.0
+ * @see         https://github.com/KrmPesan/SDK-PHP
+ * @author      KrmPesan <support@krmpesan.com>
+ * @copyright   2020 KrmPesan
+ */
 
 namespace KrmPesan;
 
 use Exception;
 
+/**
+ * KrmPesan Client Class For Handle REST API Request
+ *
+ * @see https://docs.krmpesan.com/
+ */
 class Client
 {
     /**
-     * Curl Timeout
+     * Default Curl Timeout
      *
+     * @var int
      * @see https://www.php.net/manual/en/function.curl-setopt
      */
     protected $timeout;
 
     /**
-     * Default URL
+     * Default API Url
+     *
+     * @var string
      */
     protected $apiUrl;
 
     /**
-     * Token Data
+     * API Token
+     *
+     * @var string
      */
     protected $token;
 
@@ -45,7 +64,7 @@ class Client
     /**
      * Custom Request Header
      *
-     * @var [type]
+     * @var array
      */
     protected $customHeader;
 
@@ -75,7 +94,6 @@ class Client
      * @param string $type
      * @param string $url
      * @param array $form
-     * @param array $customHeader
      *
      * @return void
      */
@@ -181,18 +199,18 @@ class Client
     /**
      * Update Device Data
      *
-     * @param array $form
+     * @param array $form Form Update Device
      * @return void
      */
     public function deviceUpdate(array $form)
     {
-        return $this->action('PUT', 'api/v2/device');
+        return $this->action('PUT', 'api/v2/device', json_encode($form));
     }
 
     /**
      * Get All Message
      *
-     * @param int $pages
+     * @param integer $page
      * @return void
      */
     public function getMessage($page = null)
@@ -209,7 +227,7 @@ class Client
     /**
      * Get All Message Inbox
      *
-     * @param int $page
+     * @param integer $page
      * @return void
      */
     public function getMessageInbox($page = null)
@@ -226,7 +244,7 @@ class Client
     /**
      * Get All Message Outbox
      *
-     * @param int $page
+     * @param integer $page
      * @return void
      */
     public function getMessageOutbox($page = null)
@@ -243,7 +261,7 @@ class Client
     /**
      * Get All Message Forward
      *
-     * @param int $page
+     * @param integer $page
      * @return void
      */
     public function getMessageForward($page = null)
@@ -260,7 +278,7 @@ class Client
     /**
      * Get Message by ID
      *
-     * @param uuid $uuid
+     * @param string $uuid
      * @return void
      */
     public function getMessageId($uuid)
@@ -271,8 +289,8 @@ class Client
     /**
      * Send Message Text
      *
-     * @param number $to
-     * @param text $message
+     * @param string|integer $to
+     * @param string $message
      * @return void
      */
     public function sendMessageText($to, $message)
@@ -289,8 +307,8 @@ class Client
     /**
      * Send Message Image
      *
-     * @param number $to
-     * @param file $image
+     * @param string|integer $to
+     * @param string $image
      * @param string $caption
      * @return void
      */
@@ -309,8 +327,8 @@ class Client
     /**
      * Send Message Document
      *
-     * @param number $to
-     * @param file $document
+     * @param string|integer $to
+     * @param string $document
      * @return void
      */
     public function sendMessageDocument($to, $document)
@@ -328,16 +346,16 @@ class Client
      * Send Message Bulk by Number
      *
      * @param array $to
-     * @param text $message
+     * @param string $message
      * @return void
      */
     public function sendBulkNumber(array $to, $message)
     {
         // build form
-        $form = [
+        $form = json_encode([
             'phone'    => $to,
-            'message'  => $document,
-        ];
+            'message'  => $message,
+        ]);
 
         return $this->action('POST', 'api/v2/message/send-bulk', $form);
     }
@@ -345,18 +363,60 @@ class Client
     /**
      * Send Message Bulk by Group ID
      *
-     * @param uuid $groupId
-     * @param text $message
+     * @param string $groupId
+     * @param string $message
      * @return void
      */
     public function sendBulkGroup($groupId, $message)
     {
         // build form
-        $form = [
+        $form = json_encode([
             'groupid'  => $groupId,
-            'message'  => $document,
+            'message'  => $message,
+        ]);
+
+        return $this->action('POST', 'api/v2/message/send-bulk-group', $form);
+    }
+
+    /**
+     * Send Message Text to Group
+     *
+     * @param string|integer $phone
+     * @param integer $groupId
+     * @param string $message
+     * @return void
+     */
+    public function sendMessageTextGroup($phone, $groupId, $message)
+    {
+        // build form
+        $form = json_encode([
+            'phone'    => $phone,
+            'groupid'  => $groupId,
+            'message'  => $message,
+        ]);
+
+        return $this->action('POST', 'api/v2/message/send-group-text', $form);
+    }
+
+    /**
+     * Send Message Image To Group
+     *
+     * @param string|integer $phone
+     * @param integer $groupId
+     * @param string $image
+     * @param string $caption
+     * @return void
+     */
+    public function sendMessageImageGroup($phone, $groupId, $image, $caption = null)
+    {
+        // build form
+        $form = [
+            'phone'    => $phone,
+            'groupid'  => $groupId,
+            'image'    => $image,
+            'caption'  => $caption,
         ];
 
-        return $this->action('POST', 'api/v2/message/send-bulk', $form);
+        return $this->action('POST', 'api/v2/message/send-group-image', $form);
     }
 }
