@@ -1,1 +1,3 @@
 docs export-ignore
+.styleci.yml export-ignore
+.php_cs export-ignore
