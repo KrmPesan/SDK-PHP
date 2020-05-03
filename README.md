@@ -1,4 +1,9 @@
 # KrmPesan SDK PHP
+[![StyleCI](https://github.styleci.io/repos/260632312/shield?branch=master)](https://github.styleci.io/repos/260632312)
+[![Latest Stable Version](https://poser.pugx.org/krmpesan/sdk/v/stable)](https://packagist.org/packages/krmpesan/sdk)
+[![Total Downloads](https://poser.pugx.org/krmpesan/sdk/downloads)](https://packagist.org/packages/krmpesan/sdk)
+[![Monthly Downloads](https://poser.pugx.org/krmpesan/sdk/d/monthly)](https://packagist.org/packages/krmpesan/sdk)
+[![License](https://poser.pugx.org/krmpesan/sdk/license)](https://packagist.org/packages/krmpesan/sdk)
 
 ## Installasi
 
@@ -12,9 +17,12 @@ composer require krmpesan/sdk
 2. Copy File `src/Client.php`
 3. Done.
 
-# Cara Penggunaan
 
-PENTING: Nomor yang tercantum hanya sebagai sample, bukan nomor kami atau nomor sesungguhnya.
+## Cara Penggunaan
+
+- PHP SDK Documentation: [https://krmpesan.github.io/SDK-PHP/](https://krmpesan.github.io/SDK-PHP/)
+
+**PENTING: Nomor yang tercantum hanya sebagai sample, bukan nomor kami atau nomor sesungguhnya.**
 
 ## Setting Konfigurasi
 ```php
@@ -124,4 +132,12 @@ stdClass Object
         )
 
 )
+```
+
+## Docs Class Generate
+```bash
+wget https://phpdoc.org/phpDocumentor.phar
+sudo mv phpDocumentor.phar /usr/bin
+sudo chmod +x /usr/bin/phpDocumentor.phar
+phpDocumentor.phar project:run -d src --template='responsive-twig'
 ```
