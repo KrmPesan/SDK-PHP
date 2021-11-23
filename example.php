@@ -1,14 +1,19 @@
 <?php
 // panggil file source
-require('src/Client.php');
+require('src/ClientV2.php');
 
 // panggil class
-use KrmPesan\Client;
+use KrmPesan\ClientV2;
 
 // setting konfigurasi
-$wa = new Client([
-    'region' => '01',
-    'token' => 'your-token-here'
+$wa = new ClientV2([
+    'token' => 'eyJhbGcixxxxxxxxxxxxx'
 ]);
 
-print_r(json_decode($wa->sendMessageText('6283140103081', 'Hai')));
+$data = $wa->sendMessageTemplate(
+    '0812xxxxxxx',
+    'news_notification',
+    ["John", "Produk", "Produk kami tidak ada masalah sama sekali", "Krm Pesan"],
+);
+
+print_r(json_decode($data, true));
