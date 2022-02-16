@@ -44,7 +44,7 @@ $wa = new Client([
 
 ### Request
 ```php
-$wa->sendMessageText('081212341234', 'Hai')
+$wa->sendMessageText('081212341234', 'Hai');
 ```
 
 ### Response
@@ -74,7 +74,7 @@ stdClass Object
 
 ### Request
 ```php
-$wa->sendMessageImage('081212341234', 'sample-image.png', 'Ini contoh gambar')
+$wa->sendMessageImage('081212341234', 'sample-image.png', 'Ini contoh gambar');
 ```
 
 ### Response
@@ -106,7 +106,7 @@ stdClass Object
 
 ### Request
 ```php
-$wa->sendMessageDocument('081212341234', 'sample-document.pdf')
+$wa->sendMessageDocument('081212341234', 'sample-document.pdf');
 ```
 
 ### Response
