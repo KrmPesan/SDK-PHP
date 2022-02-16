@@ -1,10 +1,11 @@
 <?php
 /**
- * KrmPesan PHP SDK
+ * KrmPesan PHP SDK.
  *
- * @package     KrmPesan PHP SDK
  * @version     1.2.0
+ *
  * @see         https://github.com/KrmPesan/SDK-PHP
+ *
  * @author      KrmPesan <support@krmpesan.com>
  * @copyright   2020 KrmPesan
  */
@@ -14,36 +15,37 @@ namespace KrmPesan;
 use Exception;
 
 /**
- * KrmPesan Client Class For Handle REST API Request
+ * KrmPesan Client Class For Handle REST API Request.
  *
  * @see https://docs.krmpesan.com/
  */
 class Client
 {
     /**
-     * Default Curl Timeout
+     * Default Curl Timeout.
      *
      * @var int
+     *
      * @see https://www.php.net/manual/en/function.curl-setopt
      */
     protected $timeout;
 
     /**
-     * Default API Url
+     * Default API Url.
      *
      * @var string
      */
     protected $apiUrl;
 
     /**
-     * API Token
+     * API Token.
      *
      * @var string
      */
     protected $token;
 
     /**
-     * Region Available
+     * Region Available.
      *
      * @var array
      */
@@ -56,28 +58,28 @@ class Client
     ];
 
     /**
-     * Custom Request Header
+     * Custom Request Header.
      *
      * @var array
      */
     protected $customHeader;
 
     /**
-     * Construct Function
+     * Construct Function.
      *
      * @param array $data
      */
     public function __construct(array $data)
     {
         // Select Region
-        if($data["region"]) {
-            $this->apiUrl = $this->regionPanel[$data["region"]];
+        if ($data['region']) {
+            $this->apiUrl = $this->regionPanel[$data['region']];
         } else {
             $this->apiUrl = $data['region'];
         }
 
         // Custom Set Timeout
-        $this->timeout  = $data['timeout'] ? $data['timeout'] : 30;
+        $this->timeout = $data['timeout'] ? $data['timeout'] : 30;
 
         // Set Token
         $this->token = $data['token'];
@@ -87,23 +89,23 @@ class Client
     }
 
     /**
-     * Curl Post or Get Function
+     * Curl Post or Get Function.
      *
      * @param string $type
      * @param string $url
-     * @param array $form
+     * @param array  $form
      *
      * @return void
      */
     private function action($type, $url, $form = null)
     {
         // setup url
-        $buildUrl = $this->apiUrl . '/' . $url;
+        $buildUrl = $this->apiUrl.'/'.$url;
 
         // set default header
-        $headers   = [];
+        $headers = [];
         $headers[] = 'Accept: application/json';
-        $headers[] = 'Authorization: Bearer ' . $this->token;
+        $headers[] = 'Authorization: Bearer '.$this->token;
 
         // use custom header if not null
         if ($this->customHeader) {
@@ -175,7 +177,7 @@ class Client
     }
 
     /**
-     * Device Information
+     * Device Information.
      *
      * @return void
      */
@@ -185,7 +187,7 @@ class Client
     }
 
     /**
-     * Restart Device Connection
+     * Restart Device Connection.
      *
      * @return void
      */
@@ -195,9 +197,10 @@ class Client
     }
 
     /**
-     * Update Device Data
+     * Update Device Data.
      *
      * @param array $form Form Update Device
+     *
      * @return void
      */
     public function deviceUpdate(array $form)
@@ -206,9 +209,10 @@ class Client
     }
 
     /**
-     * Get All Message
+     * Get All Message.
      *
-     * @param integer $page
+     * @param int $page
+     *
      * @return void
      */
     public function getMessage($page = null)
@@ -216,16 +220,17 @@ class Client
         $url = 'api/v2/message';
 
         if ($page) {
-            $url = 'api/v2/message?page=' . $page;
+            $url = 'api/v2/message?page='.$page;
         }
 
         return $this->action('GET', $url);
     }
 
     /**
-     * Get All Message Inbox
+     * Get All Message Inbox.
      *
-     * @param integer $page
+     * @param int $page
+     *
      * @return void
      */
     public function getMessageInbox($page = null)
@@ -233,16 +238,17 @@ class Client
         $url = 'api/v2/message/inbox';
 
         if ($page) {
-            $url = 'api/v2/message/inbox?page=' . $page;
+            $url = 'api/v2/message/inbox?page='.$page;
         }
 
         return $this->action('GET', $url);
     }
 
     /**
-     * Get All Message Outbox
+     * Get All Message Outbox.
      *
-     * @param integer $page
+     * @param int $page
+     *
      * @return void
      */
     public function getMessageOutbox($page = null)
@@ -250,16 +256,17 @@ class Client
         $url = 'api/v2/message/outbox';
 
         if ($page) {
-            $url = 'api/v2/message/outbox?page=' . $page;
+            $url = 'api/v2/message/outbox?page='.$page;
         }
 
         return $this->action('GET', $url);
     }
 
     /**
-     * Get All Message Forward
+     * Get All Message Forward.
      *
-     * @param integer $page
+     * @param int $page
+     *
      * @return void
      */
     public function getMessageForward($page = null)
@@ -267,28 +274,30 @@ class Client
         $url = 'api/v2/message/forward';
 
         if ($page) {
-            $url = 'api/v2/message/forward?page=' . $page;
+            $url = 'api/v2/message/forward?page='.$page;
         }
 
         return $this->action('GET', $url);
     }
 
     /**
-     * Get Message by ID
+     * Get Message by ID.
      *
      * @param string $uuid
+     *
      * @return void
      */
     public function getMessageId($uuid)
     {
-        return $this->action('GET', 'api/v2/message/' . $uuid);
+        return $this->action('GET', 'api/v2/message/'.$uuid);
     }
 
     /**
-     * Send Message Text
+     * Send Message Text.
      *
-     * @param string|integer $to
-     * @param string $message
+     * @param string|int $to
+     * @param string     $message
+     *
      * @return void
      */
     public function sendMessageText($to, $message)
@@ -303,11 +312,12 @@ class Client
     }
 
     /**
-     * Send Message Image
+     * Send Message Image.
      *
-     * @param string|integer $to
-     * @param string $image
-     * @param string $caption
+     * @param string|int $to
+     * @param string     $image
+     * @param string     $caption
+     *
      * @return void
      */
     public function sendMessageImage($to, $image, $caption = null)
@@ -323,10 +333,11 @@ class Client
     }
 
     /**
-     * Send Message Document
+     * Send Message Document.
      *
-     * @param string|integer $to
-     * @param string $document
+     * @param string|int $to
+     * @param string     $document
+     *
      * @return void
      */
     public function sendMessageDocument($to, $document)
@@ -341,10 +352,11 @@ class Client
     }
 
     /**
-     * Send Message Bulk by Number
+     * Send Message Bulk by Number.
      *
-     * @param array $to
+     * @param array  $to
      * @param string $message
+     *
      * @return void
      */
     public function sendBulkNumber(array $to, $message)
@@ -359,10 +371,11 @@ class Client
     }
 
     /**
-     * Send Message Bulk by Group ID
+     * Send Message Bulk by Group ID.
      *
      * @param string $groupId
      * @param string $message
+     *
      * @return void
      */
     public function sendBulkGroup($groupId, $message)
@@ -377,10 +390,11 @@ class Client
     }
 
     /**
-     * Send Message Text to Group
+     * Send Message Text to Group.
      *
-     * @param integer $groupId
+     * @param int    $groupId
      * @param string $message
+     *
      * @return void
      */
     public function sendMessageTextGroup($groupId, $message)
@@ -395,11 +409,12 @@ class Client
     }
 
     /**
-     * Send Message Image To Group
+     * Send Message Image To Group.
      *
-     * @param integer $groupId
+     * @param int    $groupId
      * @param string $image
      * @param string $caption
+     *
      * @return void
      */
     public function sendMessageImageGroup($groupId, $image, $caption = null)
@@ -415,11 +430,12 @@ class Client
     }
 
     /**
-     * Send Message Image To Group
+     * Send Message Image To Group.
      *
-     * @param integer $groupId
+     * @param int    $groupId
      * @param string $image
      * @param string $caption
+     *
      * @return void
      */
     public function sendMessageDocumentGroup($groupId, $image, $caption = null)
