@@ -1,10 +1,11 @@
 <?php
 /**
- * KrmPesan PHP SDK
+ * KrmPesan PHP SDK.
  *
- * @package     KrmPesan PHP SDK
  * @version     2.0.0
+ *
  * @see         https://github.com/KrmPesan/SDK-PHP
+ *
  * @author      KrmPesan <support@krmpesan.com>
  * @copyright   2020 KrmPesan
  */
@@ -14,55 +15,56 @@ namespace KrmPesan;
 use Exception;
 
 /**
- * KrmPesan Client Class For Handle REST API Request
+ * KrmPesan Client Class For Handle REST API Request.
  *
  * @see https://docs.krmpesan.com/
  */
 class ClientV2
 {
     /**
-     * Default Curl Timeout
+     * Default Curl Timeout.
      *
      * @var int
+     *
      * @see https://www.php.net/manual/en/function.curl-setopt
      */
     protected $timeout;
 
     /**
-     * Default API Url
+     * Default API Url.
      *
      * @var string
      */
-    protected $apiUrl = "https://api.krmpesan.com/v1";
+    protected $apiUrl = 'https://api.krmpesan.com/v1';
 
     /**
-     * API Token
+     * API Token.
      *
      * @var string
      */
     protected $token;
 
     /**
-     * Custom Request Header
+     * Custom Request Header.
      *
      * @var array
      */
     protected $customHeader;
 
     /**
-     * Construct Function
+     * Construct Function.
      *
      * @param array $data
      */
     public function __construct(array $data)
     {
         // Custom URL API
-        if($data["url"]) {
-            $this->apiUrl = $data["url"];
+        if ($data['url']) {
+            $this->apiUrl = $data['url'];
         }
 
         // Custom Set Timeout
-        $this->timeout  = $data['timeout'] ?? 30;
+        $this->timeout = $data['timeout'] ?? 30;
 
         // Set Token
         $this->token = $data['token'];
@@ -72,23 +74,23 @@ class ClientV2
     }
 
     /**
-     * Curl Post or Get Function
+     * Curl Post or Get Function.
      *
      * @param string $type
      * @param string $url
-     * @param array $form
+     * @param array  $form
      *
      * @return void
      */
     private function action($type, $url, $form = null)
     {
         // setup url
-        $buildUrl = $this->apiUrl . '/' . $url;
+        $buildUrl = $this->apiUrl.'/'.$url;
 
         // set default header
-        $headers   = [];
+        $headers = [];
         $headers[] = 'Content-Type: application/json';
-        $headers[] = 'Authorization: Bearer ' . $this->token;
+        $headers[] = 'Authorization: Bearer '.$this->token;
 
         // use custom header if not null
         if ($this->customHeader) {
@@ -160,18 +162,19 @@ class ClientV2
     }
 
     /**
-     * Send Message Text
+     * Send Message Text.
      *
      * @param string $to
      * @param string $code
-     * @param array $parameters
+     * @param array  $parameters
+     *
      * @return void
      */
     public function sendMessageTemplate($to, $code, $parameters, $buttonUrl = null)
     {
         // build form
         $form = json_encode([
-            'language'      => "id",
+            'language'      => 'id',
             'phone'         => $to,
             'code'          => $code,
             'parameters'    => (object) $parameters,
@@ -180,5 +183,4 @@ class ClientV2
 
         return $this->action('POST', 'message/template', $form);
     }
-
 }
