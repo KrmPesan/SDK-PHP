@@ -3,7 +3,7 @@
  * KrmPesan PHP SDK
  *
  * @package     KrmPesan PHP SDK
- * @version     1.1.0
+ * @version     2.0.0
  * @see         https://github.com/KrmPesan/SDK-PHP
  * @author      KrmPesan <support@krmpesan.com>
  * @copyright   2020 KrmPesan

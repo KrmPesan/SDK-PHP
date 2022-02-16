@@ -3,7 +3,7 @@
  * KrmPesan PHP SDK
  *
  * @package     KrmPesan PHP SDK
- * @version     1.1.0
+ * @version     1.2.0
  * @see         https://github.com/KrmPesan/SDK-PHP
  * @author      KrmPesan <support@krmpesan.com>
  * @copyright   2020 KrmPesan
@@ -53,12 +53,6 @@ class Client
         '03'    => 'https://region03.krmpesan.com',
         '04'    => 'https://region04.krmpesan.com',
         '05'    => 'https://region05.krmpesan.com',
-        '06'    => 'https://region06.krmpesan.com',
-        '07'    => 'https://region07.krmpesan.com',
-        '08'    => 'https://region08.krmpesan.com',
-        '09'    => 'https://region09.krmpesan.com',
-        '10'    => 'https://region10.krmpesan.com',
-        'test'  => 'http://krmpesan.test',
     ];
 
     /**
@@ -76,16 +70,20 @@ class Client
     public function __construct(array $data)
     {
         // Select Region
-        $this->apiUrl   = $this->regionPanel[$data['region']];
+        if($data["region"]) {
+            $this->apiUrl = $this->regionPanel[$data["region"]];
+        } else {
+            $this->apiUrl = $data['region'];
+        }
 
         // Custom Set Timeout
-        $this->timeout  = $data['timeout'] ?? 30;
+        $this->timeout  = $data['timeout'] ? $data['timeout'] : 30;
 
         // Set Token
         $this->token = $data['token'];
 
         // Set Custom Header
-        $this->customHeader = $data['headers'] ?? null;
+        $this->customHeader = $data['headers'] ? $data['headers'] : null;
     }
 
     /**
@@ -381,16 +379,14 @@ class Client
     /**
      * Send Message Text to Group
      *
-     * @param string|integer $phone
      * @param integer $groupId
      * @param string $message
      * @return void
      */
-    public function sendMessageTextGroup($phone, $groupId, $message)
+    public function sendMessageTextGroup($groupId, $message)
     {
         // build form
         $form = json_encode([
-            'phone'    => $phone,
             'groupid'  => $groupId,
             'message'  => $message,
         ]);
@@ -401,22 +397,40 @@ class Client
     /**
      * Send Message Image To Group
      *
-     * @param string|integer $phone
      * @param integer $groupId
      * @param string $image
      * @param string $caption
      * @return void
      */
-    public function sendMessageImageGroup($phone, $groupId, $image, $caption = null)
+    public function sendMessageImageGroup($groupId, $image, $caption = null)
     {
         // build form
         $form = [
-            'phone'    => $phone,
             'groupid'  => $groupId,
             'image'    => $image,
             'caption'  => $caption,
         ];
 
         return $this->action('POST', 'api/v2/message/send-group-image', $form);
+    }
+
+    /**
+     * Send Message Image To Group
+     *
+     * @param integer $groupId
+     * @param string $image
+     * @param string $caption
+     * @return void
+     */
+    public function sendMessageDocumentGroup($groupId, $image, $caption = null)
+    {
+        // build form
+        $form = [
+            'groupid'  => $groupId,
+            'image'    => $image,
+            'caption'  => $caption,
+        ];
+
+        return $this->action('POST', 'api/v2/message/send-document-image', $form);
     }
 }
