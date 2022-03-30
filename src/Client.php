@@ -69,20 +69,28 @@ class Client
     public function __construct(array $data)
     {
         // Select Region
-        if (isset($this->regionPanel[$data['region']]) and !empty($this->regionPanel[$data['region']])) {
-            $this->apiUrl = $this->regionPanel[$data['region']];
+        if(isset($data['region']) and !empty($data['region'])) {
+            if(isset($this->regionPanel[$data['region']])) {
+                $this->apiUrl = $this->regionPanel[$data['region']];
+            } else {
+                $this->apiUrl = $data['region'];
+            }
         } else {
-            $this->apiUrl = $data['region'];
+            throw new Exception('Region Not Found');
         }
 
         // Custom Set Timeout
-        $this->timeout = $data['timeout'] ? $data['timeout'] : 30;
+        $this->timeout = isset($data['timeout']) and !empty($data['timeout']) ? $data['timeout'] : 30;
 
         // Set Token
-        $this->token = $data['token'];
+        if(!isset($data['token']) or empty($data['token'])) {
+            throw new Exception('Token is required.');
+        } else {
+            $this->token = $data['token'];
+        }
 
         // Set Custom Header
-        $this->customHeader = $data['headers'] ? $data['headers'] : null;
+        $this->customHeader = isset($data['headers']) and !empty($data['headers']) ? $data['headers'] : null;
     }
 
     /**
