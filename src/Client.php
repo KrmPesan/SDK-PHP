@@ -69,8 +69,8 @@ class Client
     public function __construct(array $data)
     {
         // Select Region
-        if(isset($data['region']) and !empty($data['region'])) {
-            if(isset($this->regionPanel[$data['region']])) {
+        if (isset($data['region']) and !empty($data['region'])) {
+            if (isset($this->regionPanel[$data['region']])) {
                 $this->apiUrl = $this->regionPanel[$data['region']];
             } else {
                 $this->apiUrl = $data['region'];
@@ -83,7 +83,7 @@ class Client
         $this->timeout = isset($data['timeout']) and !empty($data['timeout']) ? $data['timeout'] : 30;
 
         // Set Token
-        if(!isset($data['token']) or empty($data['token'])) {
+        if (!isset($data['token']) or empty($data['token'])) {
             throw new Exception('Token is required.');
         } else {
             $this->token = $data['token'];
