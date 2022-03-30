@@ -52,9 +52,6 @@ class Client
     protected $regionPanel = [
         '01'    => 'https://region01.krmpesan.com',
         '02'    => 'https://region02.krmpesan.com',
-        '03'    => 'https://region03.krmpesan.com',
-        '04'    => 'https://region04.krmpesan.com',
-        '05'    => 'https://region05.krmpesan.com',
     ];
 
     /**
@@ -72,7 +69,7 @@ class Client
     public function __construct(array $data)
     {
         // Select Region
-        if ($data['region']) {
+        if (isset($this->regionPanel[$data['region']]) and !empty($this->regionPanel[$data['region']])) {
             $this->apiUrl = $this->regionPanel[$data['region']];
         } else {
             $this->apiUrl = $data['region'];
