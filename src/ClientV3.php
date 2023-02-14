@@ -38,7 +38,8 @@ class ClientV3
      *
      * @var string
      */
-    protected $apiUrl = 'https://api.krmpesan.dev';
+    protected $apiUrl = 'http://localhost:4000';
+    // protected $apiUrl = 'https://api.krmpesan.dev';
 
     /**
      * API Token.
@@ -46,6 +47,13 @@ class ClientV3
      * @var string
      */
     protected $token;
+
+    /**
+     * Refresh Token.
+     *
+     * @var string
+     */
+    protected $refreshToken;
 
     /**
      * API Token.
@@ -68,9 +76,8 @@ class ClientV3
      */
     public function __construct(array $data)
     {
-        // Set Token
+        // Set Token (optional)
         $this->token = $data['idToken'];
-        $this->token = $data['refreshToken'];
 
         // Set DeviceId
         if (!isset($data['deviceId']) or empty($data['deviceId'])) {
@@ -84,13 +91,7 @@ class ClientV3
         if (!isset($data['refreshToken']) or empty($data['refreshToken'])) {
             throw new Exception('Token is required.');
         } else {
-            if (isset($data['idToken'])) {
-                $this->token = $data['idToken'];
-            } else {
-                $response = $this->refreshToken($data['refreshToken'], $data['deviceId']);
-                $getToken = json_decode($response, true);
-                $this->token = $getToken["AccessToken"];
-            }
+            $this->refreshToken = $data['refreshToken'];
         }
 
         // Set Custom Header
@@ -185,15 +186,17 @@ class ClientV3
         return $result;
     }
 
-    public function refreshToken($refreshToken, $deviceId)
+    public function refreshToken()
     {
-        $url =  'tokens?refresh_token=' . $refreshToken . '&device_key=' . $deviceId;
-        return $this->action('GET', $url);
+        $url =  'tokens?refresh_token=' . $this->refreshToken . '&device_key=' . $this->deviceId;
+        $response =  $this->action('GET', $url);
+        $data = json_decode($response, true);
+        $this->token =  $data['IdToken'];
+        return $response;
     }
 
     public function sendMessageTemplate($to, $templateName, $templateLanguage, $parameters)
     {
-        // build form
         $form = json_encode([
             'phone'             => $to,
             'template_name'     => $templateName,
@@ -205,7 +208,6 @@ class ClientV3
 
     public function sendReply($to, $parameters)
     {
-        // build form
         $form = json_encode([
             'phone' => $to,
             'reply' => (object) $parameters,
