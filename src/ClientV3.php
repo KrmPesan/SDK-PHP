@@ -86,7 +86,7 @@ class ClientV3
         }
 
 
-        // Set Token
+        // Set Refrest Token
         if (!isset($data['refreshToken']) or empty($data['refreshToken'])) {
             throw new Exception('Token is required.');
         } else {
@@ -185,6 +185,11 @@ class ClientV3
         return $result;
     }
 
+    /**
+     * Refresh Token.
+     *
+     * @return void
+     */
     public function refreshToken()
     {
         $url =  'tokens?refresh_token=' . $this->refreshToken . '&device_key=' . $this->deviceId;
@@ -194,23 +199,46 @@ class ClientV3
         return $response;
     }
 
+
+    /**
+     * Send Message.
+     *
+     * @param string|int $to
+     * @param string     $templateName
+     * @param string     $templateLanguage
+     * @param object     $parameters
+     *
+     * @return void
+     */
     public function sendMessageTemplate($to, $templateName, $templateLanguage, $parameters)
     {
+        // build form
         $form = json_encode([
             'phone'             => $to,
             'template_name'     => $templateName,
             'template_language' => $templateLanguage,
             'template'          => (object) $parameters,
         ]);
+
         return $this->action('POST', 'messages', $form);
     }
 
+    /**
+     * Send Reply.
+     *
+     * @param string|int $to
+     * @param object     $parameters
+     *
+     * @return void
+     */
     public function sendReply($to, $parameters)
     {
+        // build form
         $form = json_encode([
             'phone' => $to,
             'reply' => (object) $parameters,
         ]);
+
         return $this->action('POST', 'messages', $form);
     }
 }
