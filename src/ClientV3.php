@@ -38,8 +38,7 @@ class ClientV3
      *
      * @var string
      */
-    protected $apiUrl = 'http://localhost:4000';
-    // protected $apiUrl = 'https://api.krmpesan.dev';
+    protected $apiUrl = 'https://api.krmpesan.dev';
 
     /**
      * API Token.
