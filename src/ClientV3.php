@@ -38,7 +38,7 @@ class ClientV3
      *
      * @var string
      */
-    protected $apiUrl = 'https://api.krmpesan.dev';
+    protected $apiUrl = 'https://api.krmpesan.app';
 
     /**
      * API Token.
@@ -204,7 +204,7 @@ class ClientV3
      * @param string|int $to
      * @param string     $templateLanguage
      * @param string     $templateName
-     * @param array     $body
+     * @param array      $body
      *
      * @return void
      */
