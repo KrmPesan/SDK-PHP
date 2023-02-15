@@ -85,7 +85,6 @@ class ClientV3
             $this->deviceId = $data['deviceId'];
         }
 
-
         // Set Refrest Token
         if (!isset($data['refreshToken']) or empty($data['refreshToken'])) {
             throw new Exception('Token is required.');
@@ -199,46 +198,183 @@ class ClientV3
         return $response;
     }
 
-
     /**
-     * Send Message.
+     * Send Message Text.
      *
      * @param string|int $to
-     * @param string     $templateName
      * @param string     $templateLanguage
-     * @param object     $parameters
+     * @param string     $templateName
+     * @param array     $body
      *
      * @return void
      */
-    public function sendMessageTemplate($to, $templateName, $templateLanguage, $parameters)
+    public function sendMessageTemplateText($to, $templateName, $templateLanguage, $body)
     {
         // build form
         $form = json_encode([
             'phone'             => $to,
             'template_name'     => $templateName,
             'template_language' => $templateLanguage,
-            'template'          => (object) $parameters,
+            'template'          => (object) [
+                "body" => $body
+            ],
         ]);
 
         return $this->action('POST', 'messages', $form);
     }
 
     /**
-     * Send Reply.
+     * Send Message Image.
      *
      * @param string|int $to
-     * @param object     $parameters
+     * @param string     $templateLanguage
+     * @param string     $templateName
+     * @param array      $body
+     * @param string     $image
      *
      * @return void
      */
-    public function sendReply($to, $parameters)
+    public function sendMessageTemplateImage($to, $templateName, $templateLanguage, $body, $image)
+    {
+        // build form
+        $form = json_encode([
+            'phone'             => $to,
+            'template_name'     => $templateName,
+            'template_language' => $templateLanguage,
+            'template'          => (object) [
+                "body"   => $body,
+                "header" => [
+                    "type" => "image",
+                    "url"  => $image
+                ]
+            ],
+        ]);
+
+        return $this->action('POST', 'messages', $form);
+    }
+
+    /**
+     * Send Message Document.
+     *
+     * @param string|int $to
+     * @param string     $templateLanguage
+     * @param string     $templateName
+     * @param array      $body
+     * @param string     $document
+     *
+     * @return void
+     */
+    public function sendMessageTemplateDocument($to, $templateName, $templateLanguage, $body, $document)
+    {
+        // build form
+        $form = json_encode([
+            'phone'             => $to,
+            'template_name'     => $templateName,
+            'template_language' => $templateLanguage,
+            'template'          => (object) [
+                "body"   => $body,
+                "header" => [
+                    "type" => "document",
+                    "url"  => $document
+                ]
+            ],
+        ]);
+
+        return $this->action('POST', 'messages', $form);
+    }
+
+    /**
+     * Send Message Button.
+     *
+     * @param string|int $to
+     * @param string     $templateLanguage
+     * @param string     $templateName
+     * @param array      $body
+     * @param string     $button
+     *
+     * @return void
+     */
+    public function sendMessageTemplateButton($to, $templateName, $templateLanguage, $body, $button)
+    {
+        // build form
+        $form = json_encode([
+            'phone'             => $to,
+            'template_name'     => $templateName,
+            'template_language' => $templateLanguage,
+            'template'          => (object) [
+                "body"   => $body,
+                "buttons" => [
+                    "url"  => $button
+                ]
+            ],
+        ]);
+
+        return $this->action('POST', 'messages', $form);
+    }
+
+
+    /**
+     * Send Reply Text.
+     *
+     * @param string|int $to
+     * @param string     $text
+     *
+     * @return void
+     */
+    public function sendReplyText($to, $text)
     {
         // build form
         $form = json_encode([
             'phone' => $to,
-            'reply' => (object) $parameters,
+            'reply' => (object) [
+                "type" => "text",
+                "text" => $text
+            ],
         ]);
+        return $this->action('POST', 'messages', $form);
+    }
 
+    /**
+     * Send Reply Image.
+     *
+     * @param string|int $to
+     * @param string     $image
+     * @param string     $caption
+     *
+     * @return void
+     */
+    public function sendReplyImage($to, $image, $caption = "")
+    {
+        // build form
+        $form = json_encode([
+            'phone' => $to,
+            'reply' => (object) [
+                "type"    => "image",
+                "image"   => $image,
+                "caption" => $caption
+            ],
+        ]);
+        return $this->action('POST', 'messages', $form);
+    }
+
+    /**
+     * Send Reply document.
+     *
+     * @param string|int $to
+     * @param string     $document
+     *
+     * @return void
+     */
+    public function sendReplyDocument($to, $document)
+    {
+        // build form
+        $form = json_encode([
+            'phone' => $to,
+            'reply' => (object) [
+                "type"    => "image",
+                "document"   => $document
+            ],
+        ]);
         return $this->action('POST', 'messages', $form);
     }
 }
