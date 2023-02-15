@@ -20,10 +20,8 @@ use Exception;
  *
  * @see https://docs.krmpesan.com/
  */
-
 class ClientV3
 {
-
     /**
      * Default Curl Timeout.
      *
@@ -108,12 +106,12 @@ class ClientV3
     private function action($type, $url, $form = null)
     {
         // setup url
-        $buildUrl = $this->apiUrl . '/' . $url;
+        $buildUrl = $this->apiUrl.'/'.$url;
 
         // set default header
         $headers = [];
         $headers[] = 'Content-Type: application/json';
-        $headers[] = 'Authorization: Bearer ' . $this->token;
+        $headers[] = 'Authorization: Bearer '.$this->token;
 
         // use custom header if not null
         if ($this->customHeader) {
@@ -191,10 +189,11 @@ class ClientV3
      */
     public function refreshToken()
     {
-        $url =  'tokens?refresh_token=' . $this->refreshToken . '&device_key=' . $this->deviceId;
-        $response =  $this->action('GET', $url);
+        $url = 'tokens?refresh_token='.$this->refreshToken.'&device_key='.$this->deviceId;
+        $response = $this->action('GET', $url);
         $data = json_decode($response, true);
-        $this->token =  $data['IdToken'];
+        $this->token = $data['IdToken'];
+
         return $response;
     }
 
@@ -216,7 +215,7 @@ class ClientV3
             'template_name'     => $templateName,
             'template_language' => $templateLanguage,
             'template'          => (object) [
-                "body" => $body
+                'body' => $body,
             ],
         ]);
 
@@ -242,11 +241,11 @@ class ClientV3
             'template_name'     => $templateName,
             'template_language' => $templateLanguage,
             'template'          => (object) [
-                "body"   => $body,
-                "header" => [
-                    "type" => "image",
-                    "url"  => $image
-                ]
+                'body'   => $body,
+                'header' => [
+                    'type' => 'image',
+                    'url'  => $image,
+                ],
             ],
         ]);
 
@@ -272,11 +271,11 @@ class ClientV3
             'template_name'     => $templateName,
             'template_language' => $templateLanguage,
             'template'          => (object) [
-                "body"   => $body,
-                "header" => [
-                    "type" => "document",
-                    "url"  => $document
-                ]
+                'body'   => $body,
+                'header' => [
+                    'type' => 'document',
+                    'url'  => $document,
+                ],
             ],
         ]);
 
@@ -302,16 +301,15 @@ class ClientV3
             'template_name'     => $templateName,
             'template_language' => $templateLanguage,
             'template'          => (object) [
-                "body"   => $body,
-                "buttons" => [
-                    "url"  => $button
-                ]
+                'body'    => $body,
+                'buttons' => [
+                    'url'  => $button,
+                ],
             ],
         ]);
 
         return $this->action('POST', 'messages', $form);
     }
-
 
     /**
      * Send Reply Text.
@@ -327,10 +325,11 @@ class ClientV3
         $form = json_encode([
             'phone' => $to,
             'reply' => (object) [
-                "type" => "text",
-                "text" => $text
+                'type' => 'text',
+                'text' => $text,
             ],
         ]);
+
         return $this->action('POST', 'messages', $form);
     }
 
@@ -343,17 +342,18 @@ class ClientV3
      *
      * @return void
      */
-    public function sendReplyImage($to, $image, $caption = "")
+    public function sendReplyImage($to, $image, $caption = '')
     {
         // build form
         $form = json_encode([
             'phone' => $to,
             'reply' => (object) [
-                "type"    => "image",
-                "image"   => $image,
-                "caption" => $caption
+                'type'    => 'image',
+                'image'   => $image,
+                'caption' => $caption,
             ],
         ]);
+
         return $this->action('POST', 'messages', $form);
     }
 
@@ -371,10 +371,11 @@ class ClientV3
         $form = json_encode([
             'phone' => $to,
             'reply' => (object) [
-                "type"    => "image",
-                "document"   => $document
+                'type'       => 'image',
+                'document'   => $document,
             ],
         ]);
+
         return $this->action('POST', 'messages', $form);
     }
 }
