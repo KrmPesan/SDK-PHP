@@ -197,51 +197,50 @@ class ClientV3
         return $response;
     }
 
-
     /**
-     * Create Template Message
-     * 
+     * Create Template Message.
+     *
      * @param string $name
-     * @param string $category UTILLITY, AUTHENTICATION, MARKETING
+     * @param string $category    UTILLITY, AUTHENTICATION, MARKETING
      * @param string $description
      */
     public function createTemplate($name, $category, $description)
     {
         // build form
         $form = json_encode([
-            'name' => $name,
-            'category' => $category,
-            'description' => $description
+            'name'        => $name,
+            'category'    => $category,
+            'description' => $description,
         ]);
 
         return $this->action('POST', 'messages/template', $form);
     }
 
     /**
-     * Create Template Language
-     * 
+     * Create Template Language.
+     *
      * @param string $slug
-     * @param string $lang en, id
+     * @param string $lang    en, id
      * @param string $message
-     * @param array $fields ["fields-1", "fields-2", "fields-3"]
-     * @param array $header [
-     *      "type" => "image|document",
-     *      "url" => "https://example.com/image.png"
-     * ]
+     * @param array  $fields  ["fields-1", "fields-2", "fields-3"]
+     * @param array  $header  [
+     *                        "type" => "image|document",
+     *                        "url" => "https://example.com/image.png"
+     *                        ]
      * @param string $footer
-     * @param array $button
+     * @param array  $button
      */
     public function createTemplateLang($slug, $lang, $message, $fields, $header = null, $footer = null, $button = null)
     {
         // build form
         $form = json_encode([
-            'slug' => $slug,
+            'slug'     => $slug,
             'language' => $lang,
-            'message' => $message,
-            'fields' => $fields,
-            'header' => isset($header) ? $header : null,
-            'footer' => isset($footer) ? $footer : null,
-            'button' => isset($button) ? $button : null
+            'message'  => $message,
+            'fields'   => $fields,
+            'header'   => isset($header) ? $header : null,
+            'footer'   => isset($footer) ? $footer : null,
+            'button'   => isset($button) ? $button : null,
         ]);
 
         return $this->action('POST', 'messages/template/lang', $form);
