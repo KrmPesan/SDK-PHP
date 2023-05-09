@@ -13,6 +13,8 @@
 
 namespace KrmPesan;
 
+use DateTime;
+use DateTimeZone;
 use Exception;
 
 /**
@@ -39,6 +41,11 @@ class ClientV3
     protected $apiUrl = 'https://api.krmpesan.app';
 
     /**
+     * Store Token to File JSON Format
+     */
+    protected $storeTokenToFile;
+
+    /**
      * API Token.
      *
      * @var string
@@ -60,6 +67,13 @@ class ClientV3
     protected $deviceId;
 
     /**
+     * Token Expired.
+     *
+     * @var string
+     */
+    protected $expiredAt;
+
+    /**
      * Custom Request Header.
      *
      * @var array
@@ -73,25 +87,42 @@ class ClientV3
      */
     public function __construct(array $data)
     {
-        // Set Token (optional)
-        $this->token = $data['idToken'];
+        // Set Token Path
+        if(isset($data['storeTokenToFile']) and !empty($data['storeTokenToFile'])) {
+            // check path directory is exist
+            if(!is_dir($data['storeTokenToFile'])) {
+                throw new Exception('Directory not found.');
+            }
 
-        // Set DeviceId
-        if (!isset($data['deviceId']) or empty($data['deviceId'])) {
-            throw new Exception('DeviceId is required.');
-        } else {
-            $this->deviceId = $data['deviceId'];
-        }
+            // save path
+            $this->storeTokenToFile = $data['storeTokenToFile'] . '/token.json';
 
-        // Set Refrest Token
-        if (!isset($data['refreshToken']) or empty($data['refreshToken'])) {
-            throw new Exception('Token is required.');
+            // load token
+
         } else {
-            $this->refreshToken = $data['refreshToken'];
+            // Set Token (optional)
+            $this->token = $data['idToken'];
+
+            // Set DeviceId
+            if (!isset($data['deviceId']) or empty($data['deviceId'])) {
+                throw new Exception('DeviceId is required.');
+            } else {
+                $this->deviceId = $data['deviceId'];
+            }
+
+            // Set Refrest Token
+            if (!isset($data['refreshToken']) or empty($data['refreshToken'])) {
+                throw new Exception('Token is required.');
+            } else {
+                $this->refreshToken = $data['refreshToken'];
+            }
         }
 
         // Set Custom Header
         $this->customHeader = $data['headers'] ?? null;
+
+        // validate token
+        $this->validateToken();
     }
 
     /**
@@ -100,8 +131,7 @@ class ClientV3
      * @param string $type
      * @param string $url
      * @param array  $form
-     *
-     * @return void
+     * 
      */
     private function action($type, $url, $form = null)
     {
@@ -194,7 +224,63 @@ class ClientV3
         $data = json_decode($response, true);
         $this->token = $data['IdToken'];
 
+        $this->storeToken();
+
         return $response;
+    }
+
+    public function getToken()
+    {
+        if(isset($this->storeTokenToFile) and !empty($this->storeTokenToFile)) {
+            $getFile = file_get_contents($this->storeTokenToFile);
+            $parseFile = json_decode($getFile, true);
+            
+            $this->token = $parseFile['idToken'];
+            $this->refreshToken = $parseFile['refreshToken'];
+            $this->expiredAt = isset($parseFile['expiredAt']) ? $parseFile['expiredAt'] : null;
+        }
+
+        $result = [
+            "idToken" => $this->token,
+            "refreshToken" => $this->refreshToken,
+            "expiredAt" => $this->expiredAt
+        ];
+
+        return $result;
+    }
+
+    public function storeToken()
+    {
+        if(isset($this->storeTokenToFile) and !empty($this->storeTokenToFile)) {
+            try {
+                $getFile = file_get_contents($this->storeTokenToFile);
+                $parseFile = json_decode($getFile, true);
+
+                $date = new DateTime('now', new DateTimeZone('Asia/Jakarta'));
+                $date->modify("+1 day");
+                $parseFile['idToken'] = $this->token;
+                $parseFile['expiredAt'] = $date->format('Y-m-d H:i:s');
+
+                file_put_contents($this->storeTokenToFile, json_encode($parseFile));
+
+            } catch (Exception $e) {
+                throw new Exception("storeTokenToFile Error.!");
+            }
+        }
+    }
+
+    public function validateToken()
+    {
+        try {
+            $req = $this->action('GET', 'devices');
+
+            print_r(json_decode($req));
+
+            // success
+        } catch (Exception $e) {
+            // error
+            print_r($e);
+        }
     }
 
     /**
