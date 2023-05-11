@@ -344,7 +344,7 @@ class ClientV3
             'description' => $description,
         ]);
 
-        return $this->action('POST', 'messages/template', $form);
+        return $this->request('POST', 'messages/template', $form);
     }
 
     /**
@@ -374,7 +374,7 @@ class ClientV3
             'button'   => isset($button) ? $button : null,
         ]);
 
-        return $this->action('POST', 'messages/template/lang', $form);
+        return $this->request('POST', 'messages/template/lang', $form);
     }
 
     /**
@@ -399,7 +399,7 @@ class ClientV3
             ],
         ]);
 
-        return $this->action('POST', 'messages', $form);
+        return $this->request('POST', 'messages', $form);
     }
 
     /**
@@ -429,7 +429,7 @@ class ClientV3
             ],
         ]);
 
-        return $this->action('POST', 'messages', $form);
+        return $this->request('POST', 'messages', $form);
     }
 
     /**
@@ -459,7 +459,7 @@ class ClientV3
             ],
         ]);
 
-        return $this->action('POST', 'messages', $form);
+        return $this->request('POST', 'messages', $form);
     }
 
     /**
@@ -488,7 +488,7 @@ class ClientV3
             ],
         ]);
 
-        return $this->action('POST', 'messages', $form);
+        return $this->request('POST', 'messages', $form);
     }
 
     /**
@@ -510,7 +510,7 @@ class ClientV3
             ],
         ]);
 
-        return $this->action('POST', 'messages', $form);
+        return $this->request('POST', 'messages', $form);
     }
 
     /**
@@ -534,7 +534,7 @@ class ClientV3
             ],
         ]);
 
-        return $this->action('POST', 'messages', $form);
+        return $this->request('POST', 'messages', $form);
     }
 
     /**
@@ -556,7 +556,7 @@ class ClientV3
             ],
         ]);
 
-        return $this->action('POST', 'messages', $form);
+        return $this->request('POST', 'messages', $form);
     }
 
     /**
