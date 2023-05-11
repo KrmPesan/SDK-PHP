@@ -8,7 +8,7 @@ use KrmPesan\ClientV3;
 
 // setting konfigurasi
 $wa = new ClientV3([
-    'tokenFile' => __DIR__
+    'tokenFile' => __DIR__,
 ]);
 
 // print_r($wa->getDevice());
