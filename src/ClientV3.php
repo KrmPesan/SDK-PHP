@@ -13,6 +13,8 @@
 
 namespace KrmPesan;
 
+use DateTime;
+use DateTimeZone;
 use Exception;
 
 /**
@@ -39,6 +41,19 @@ class ClientV3
     protected $apiUrl = 'https://api.krmpesan.app';
 
     /**
+     * Default TimeZone For DateTime
+     * Example: Asia/Jakarta.
+     *
+     * @var string
+     */
+    protected $timezone;
+
+    /**
+     * Store Token to File JSON Format.
+     */
+    protected $tokenFile;
+
+    /**
      * API Token.
      *
      * @var string
@@ -60,6 +75,13 @@ class ClientV3
     protected $deviceId;
 
     /**
+     * Token Expired.
+     *
+     * @var string
+     */
+    protected $expiredAt;
+
+    /**
      * Custom Request Header.
      *
      * @var array
@@ -73,25 +95,44 @@ class ClientV3
      */
     public function __construct(array $data)
     {
-        // Set Token (optional)
-        $this->token = $data['idToken'];
+        $this->timezone = isset($data['timezone']) ? $data['timezone'] : 'Asia/Jakarta';
 
-        // Set DeviceId
-        if (!isset($data['deviceId']) or empty($data['deviceId'])) {
-            throw new Exception('DeviceId is required.');
-        } else {
-            $this->deviceId = $data['deviceId'];
-        }
+        // Set Token Path
+        if (isset($data['tokenFile']) and !empty($data['tokenFile'])) {
+            // check path directory is exist
+            if (!is_dir($data['tokenFile'])) {
+                throw new Exception('Directory not found.');
+            }
 
-        // Set Refrest Token
-        if (!isset($data['refreshToken']) or empty($data['refreshToken'])) {
-            throw new Exception('Token is required.');
+            // save path
+            $this->tokenFile = $data['tokenFile'].'/token.json';
+
+            // load token
+            $this->getToken();
         } else {
-            $this->refreshToken = $data['refreshToken'];
+            // Set Token (optional)
+            $this->token = $data['idToken'];
+
+            // Set DeviceId
+            if (!isset($data['deviceId']) or empty($data['deviceId'])) {
+                throw new Exception('DeviceId is required.');
+            } else {
+                $this->deviceId = $data['deviceId'];
+            }
+
+            // Set Refresh Token
+            if (!isset($data['refreshToken']) or empty($data['refreshToken'])) {
+                throw new Exception('Token is required.');
+            } else {
+                $this->refreshToken = $data['refreshToken'];
+            }
         }
 
         // Set Custom Header
         $this->customHeader = $data['headers'] ?? null;
+
+        // validate token
+        $this->validateToken();
     }
 
     /**
@@ -100,8 +141,6 @@ class ClientV3
      * @param string $type
      * @param string $url
      * @param array  $form
-     *
-     * @return void
      */
     private function action($type, $url, $form = null)
     {
@@ -182,6 +221,17 @@ class ClientV3
         return $result;
     }
 
+    public function request($type, $url, $form = null)
+    {
+        try {
+            $this->validateToken();
+
+            return $this->action($type, $url, $form);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
     /**
      * Refresh Token.
      *
@@ -194,7 +244,88 @@ class ClientV3
         $data = json_decode($response, true);
         $this->token = $data['IdToken'];
 
-        return $response;
+        // load token to internal function
+        $this->storeToken();
+
+        return $data;
+    }
+
+    public function getToken()
+    {
+        if (isset($this->tokenFile) and !empty($this->tokenFile)) {
+            $getFile = file_get_contents($this->tokenFile);
+            $parseFile = json_decode($getFile, true);
+
+            $refreshToken = isset($parseFile['refreshToken']) ? $parseFile['refreshToken'] : null;
+            $deviceId = isset($parseFile['deviceId']) ? $parseFile['deviceId'] : null;
+            $idToken = isset($parseFile['idToken']) ? $parseFile['idToken'] : null;
+            $expiredAt = isset($parseFile['expiredAt']) ? $parseFile['expiredAt'] : null;
+
+            if (!$refreshToken) {
+                throw new Exception('refreshToken Not Found at '.$this->tokenFile);
+            }
+
+            // set refresh token
+            $this->refreshToken = $refreshToken;
+
+            if (!$deviceId) {
+                throw new Exception('deviceId Not Found at '.$this->tokenFile);
+            }
+
+            // set refresh token
+            $this->deviceId = $deviceId;
+
+            if (!$idToken xor !$expiredAt) {
+                $this->refreshToken();
+            } else {
+                $this->token = $idToken;
+                $this->expiredAt = $expiredAt;
+            }
+        }
+
+        $result = [
+            'idToken'      => $this->token,
+            'refreshToken' => $this->refreshToken,
+            'expiredAt'    => $this->expiredAt,
+        ];
+
+        return $result;
+    }
+
+    public function storeToken()
+    {
+        if (isset($this->tokenFile) and !empty($this->tokenFile)) {
+            try {
+                $getFile = file_get_contents($this->tokenFile);
+                $parseFile = json_decode($getFile, true);
+
+                $date = new DateTime('now', new DateTimeZone($this->timezone));
+                $date->modify('+1 day');
+                $parseFile['idToken'] = $this->token;
+                $parseFile['expiredAt'] = $date->format('Y-m-d H:i:s');
+
+                file_put_contents($this->tokenFile, json_encode($parseFile));
+            } catch (Exception $e) {
+                throw new Exception('tokenFile Error.!');
+            }
+        }
+    }
+
+    public function validateToken()
+    {
+        try {
+            $date = new DateTime('now', new DateTimeZone($this->timezone));
+            $now = $date->format('Y-m-d H:i:s');
+
+            if ($now > $this->expiredAt) {
+                $this->refreshToken();
+            }
+
+            // success
+        } catch (Exception $e) {
+            // error
+            print_r($e);
+        }
     }
 
     /**
@@ -426,5 +557,21 @@ class ClientV3
         ]);
 
         return $this->action('POST', 'messages', $form);
+    }
+
+    /**
+     * Get Device Data.
+     */
+    public function getDevice()
+    {
+        return $this->request('GET', 'devices');
+    }
+
+    /**
+     * Get All Messages.
+     */
+    public function getMessages()
+    {
+        return $this->request('GET', 'messages');
     }
 }
