@@ -1,5 +1,5 @@
 # KrmPesan SDK PHP
-[![StyleCI](https://github.styleci.io/repos/260632312/shield?branch=master)](https://github.styleci.io/repos/260632312)
+[![StyleCI](https://github.styleci.io/repos/260632312/shield?branch=v3)](https://github.styleci.io/repos/260632312)
 [![Latest Stable Version](https://poser.pugx.org/krmpesan/sdk/v/stable)](https://packagist.org/packages/krmpesan/sdk)
 [![Total Downloads](https://poser.pugx.org/krmpesan/sdk/downloads)](https://packagist.org/packages/krmpesan/sdk)
 [![Monthly Downloads](https://poser.pugx.org/krmpesan/sdk/d/monthly)](https://packagist.org/packages/krmpesan/sdk)
