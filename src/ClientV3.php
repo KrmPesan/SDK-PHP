@@ -40,17 +40,16 @@ class ClientV3
      */
     protected $apiUrl = 'https://api.krmpesan.app';
 
-
     /**
      * Default TimeZone For DateTime
-     * Example: Asia/Jakarta
-     * 
+     * Example: Asia/Jakarta.
+     *
      * @var string
      */
     protected $timezone;
 
     /**
-     * Store Token to File JSON Format
+     * Store Token to File JSON Format.
      */
     protected $tokenFile;
 
@@ -99,14 +98,14 @@ class ClientV3
         $this->timezone = isset($data['timezone']) ? $data['timezone'] : 'Asia/Jakarta';
 
         // Set Token Path
-        if(isset($data['tokenFile']) and !empty($data['tokenFile'])) {
+        if (isset($data['tokenFile']) and !empty($data['tokenFile'])) {
             // check path directory is exist
-            if(!is_dir($data['tokenFile'])) {
+            if (!is_dir($data['tokenFile'])) {
                 throw new Exception('Directory not found.');
             }
 
             // save path
-            $this->tokenFile = $data['tokenFile'] . '/token.json';
+            $this->tokenFile = $data['tokenFile'].'/token.json';
 
             // load token
             $this->getToken();
@@ -142,7 +141,6 @@ class ClientV3
      * @param string $type
      * @param string $url
      * @param array  $form
-     * 
      */
     private function action($type, $url, $form = null)
     {
@@ -254,7 +252,7 @@ class ClientV3
 
     public function getToken()
     {
-        if(isset($this->tokenFile) and !empty($this->tokenFile)) {
+        if (isset($this->tokenFile) and !empty($this->tokenFile)) {
             $getFile = file_get_contents($this->tokenFile);
             $parseFile = json_decode($getFile, true);
 
@@ -263,21 +261,21 @@ class ClientV3
             $idToken = isset($parseFile['idToken']) ? $parseFile['idToken'] : null;
             $expiredAt = isset($parseFile['expiredAt']) ? $parseFile['expiredAt'] : null;
 
-            if(!$refreshToken) {
-                throw new Exception("refreshToken Not Found at " . $this->tokenFile);
+            if (!$refreshToken) {
+                throw new Exception('refreshToken Not Found at '.$this->tokenFile);
             }
 
             // set refresh token
             $this->refreshToken = $refreshToken;
 
-            if(!$deviceId) {
-                throw new Exception("deviceId Not Found at " . $this->tokenFile);
+            if (!$deviceId) {
+                throw new Exception('deviceId Not Found at '.$this->tokenFile);
             }
 
             // set refresh token
             $this->deviceId = $deviceId;
 
-            if(!$idToken XOR !$expiredAt) {
+            if (!$idToken xor !$expiredAt) {
                 $this->refreshToken();
             } else {
                 $this->token = $idToken;
@@ -286,9 +284,9 @@ class ClientV3
         }
 
         $result = [
-            "idToken" => $this->token,
-            "refreshToken" => $this->refreshToken,
-            "expiredAt" => $this->expiredAt
+            'idToken'      => $this->token,
+            'refreshToken' => $this->refreshToken,
+            'expiredAt'    => $this->expiredAt,
         ];
 
         return $result;
@@ -296,20 +294,19 @@ class ClientV3
 
     public function storeToken()
     {
-        if(isset($this->tokenFile) and !empty($this->tokenFile)) {
+        if (isset($this->tokenFile) and !empty($this->tokenFile)) {
             try {
                 $getFile = file_get_contents($this->tokenFile);
                 $parseFile = json_decode($getFile, true);
 
                 $date = new DateTime('now', new DateTimeZone($this->timezone));
-                $date->modify("+1 day");
+                $date->modify('+1 day');
                 $parseFile['idToken'] = $this->token;
                 $parseFile['expiredAt'] = $date->format('Y-m-d H:i:s');
 
                 file_put_contents($this->tokenFile, json_encode($parseFile));
-
             } catch (Exception $e) {
-                throw new Exception("tokenFile Error.!");
+                throw new Exception('tokenFile Error.!');
             }
         }
     }
@@ -563,7 +560,7 @@ class ClientV3
     }
 
     /**
-     * Get Device Data
+     * Get Device Data.
      */
     public function getDevice()
     {
@@ -571,7 +568,7 @@ class ClientV3
     }
 
     /**
-     * Get All Messages
+     * Get All Messages.
      */
     public function getMessages()
     {
