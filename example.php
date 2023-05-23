@@ -24,7 +24,6 @@ print_r(json_decode($messages, true));
 // );
 // print_r(json_decode($data, true));
 
-
 // upload file and get url from file
 // $url = $wa->upload('sample.png');
 // print_r($url);

@@ -1,9 +1,9 @@
 <?php
 
-$url = "https://api.krmpesan.app";
+$url = 'https://api.krmpesan.app';
 
-if(strpos($url, 'https') !== false){
-  echo "https";
+if (strpos($url, 'https') !== false) {
+    echo 'https';
 } else {
-  echo "http";
+    echo 'http';
 }
