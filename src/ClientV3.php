@@ -569,18 +569,18 @@ class ClientV3
 
         $presign = $this->request('POST', 'files/generate', json_encode([
             'filename' => $filename,
-            'mime' => $filemime,
-            'expired' => 30
+            'mime'     => $filemime,
+            'expired'  => 30,
         ]));
 
         $resp = json_decode($presign, true);
 
-        if(!isset($resp['data']) and !isset($resp['data']['url'])) {
+        if (!isset($resp['data']) and !isset($resp['data']['url'])) {
             throw new Exception('Failed to generate presign url');
         }
 
         $url = $resp['data']['url'];
-        $urlClean = explode("?", $url)[0];
+        $urlClean = explode('?', $url)[0];
 
         // Create a cURL handle
         $curl = curl_init();
@@ -600,7 +600,7 @@ class ClientV3
 
         // Check if the request was successful
         if ($response === false) {
-            throw  new Exception('Error uploading file: ' . curl_error($curl));
+            throw  new Exception('Error uploading file: '.curl_error($curl));
         }
 
         // Close the cURL handle
