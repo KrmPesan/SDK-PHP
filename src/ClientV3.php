@@ -142,7 +142,7 @@ class ClientV3
      * @param string $url
      * @param array  $form
      */
-    private function action($type, $url, $form = null)
+    private function action($type, $url, $form = null, $file = null)
     {
         // setup url
         $buildUrl = $this->apiUrl.'/'.$url;
@@ -157,33 +157,6 @@ class ClientV3
             $headers = $this->customHeader;
         }
 
-        if (
-            isset($form['image']) xor
-            isset($form['document'])
-        ) {
-            // update header type
-            $headers[] = 'Content-Type: multipart/form-data';
-
-            // update form data
-            $fileData = $form['image'] ?? $form['document'];
-
-            // parse file and get file information
-            // https://www.php.net/manual/en/function.realpath
-            $file = realpath($fileData);
-            // https://www.php.net/manual/en/function.basename
-            $filename = basename($file);
-            // https://www.php.net/manual/en/function.mime-content-type
-            $filemime = mime_content_type($file);
-
-            if (isset($form['image'])) {
-                $form['image'] = curl_file_create($file, $filemime, $filename);
-            } else {
-                $form['document'] = curl_file_create($file, $filemime, $filename);
-            }
-        } else {
-            $headers[] = 'Content-Type: application/json';
-        }
-
         // build curl instance
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $buildUrl);
@@ -193,13 +166,22 @@ class ClientV3
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
+        if (isset($file)) {
+            curl_setopt($ch, CURLOPT_INFILE, fopen($file, 'r'));
+            curl_setopt($ch, CURLOPT_INFILESIZE, filesize($file));
+        } else {
+            $headers[] = 'Content-Type: application/json';
+        }
+
+        if (isset($form)) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $form);
+        }
+
         // check action type
         if ($type == 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $form);
         } elseif ($type == 'PUT') {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $form);
         } elseif ($type == 'DELETE') {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
         } else {
@@ -573,5 +555,57 @@ class ClientV3
     public function getMessages()
     {
         return $this->request('GET', 'messages');
+    }
+
+    public function upload($fileData)
+    {
+        // parse file and get file information
+        // https://www.php.net/manual/en/function.realpath
+        $file = realpath($fileData);
+        // https://www.php.net/manual/en/function.basename
+        $filename = basename($file);
+        // https://www.php.net/manual/en/function.mime-content-type
+        $filemime = mime_content_type($file);
+
+        $presign = $this->request('POST', 'files/generate', json_encode([
+            'filename' => $filename,
+            'mime'     => $filemime,
+            'expired'  => 30,
+        ]));
+
+        $resp = json_decode($presign, true);
+
+        if (!isset($resp['data']) and !isset($resp['data']['url'])) {
+            throw new Exception('Failed to generate presign url');
+        }
+
+        $url = $resp['data']['url'];
+        $urlClean = explode('?', $url)[0];
+
+        // Create a cURL handle
+        $curl = curl_init();
+
+        // Set the cURL options
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_PUT, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYSTATUS, false);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_INFILE, fopen($fileData, 'r'));
+        curl_setopt($curl, CURLOPT_INFILESIZE, filesize($fileData));
+        curl_setopt($curl, CURLOPT_HTTPHEADER, ["Content-Type: $filemime"]);
+
+        // Execute the cURL request
+        $response = curl_exec($curl);
+
+        // Check if the request was successful
+        if ($response === false) {
+            throw  new Exception('Error uploading file: '.curl_error($curl));
+        }
+
+        // Close the cURL handle
+        curl_close($curl);
+
+        return $urlClean;
     }
 }
