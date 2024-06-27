@@ -3,7 +3,7 @@
 /**
  * KrmPesan PHP SDK.
  *
- * @version     3.1.0
+ * @version     3.5.0
  *
  * @see         https://github.com/KrmPesan/SDK-PHP
  *
@@ -609,5 +609,31 @@ class ClientV3
         curl_close($curl);
 
         return $urlClean;
+    }
+
+    /**
+     * Send Message Template Authentication.
+     *
+     * @param string|int $to
+     * @param string     $templateName
+     * @param string     $templateLanguage
+     * @param string     $otp
+     */
+    public function sendMessageTemplateAuthentication($to, $templateName, $templateLanguage, $otp)
+    {
+        // build form
+        $form = [
+            'phone'             => $to,
+            'template_name'     => $templateName,
+            'template_language' => $templateLanguage,
+            'template'          => (object) [
+                'body'    => [$otp],
+                'buttons' => [
+                    'otp_copy_code' => $otp,
+                ],
+            ],
+        ];
+
+        return $this->request('POST', 'messages', json_encode($form));
     }
 }

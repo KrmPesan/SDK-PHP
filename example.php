@@ -20,10 +20,18 @@ $wa = new ClientV3([
 // print_r(json_decode($messages, true));
 
 // sending message with template without parameter
-$data = $wa->sendMessageTemplateText(
-    '081231135699',
-    'promo_juni_2024',
+// $data = $wa->sendMessageTemplateText(
+//     '081216667996',
+//     'promo_juni_2024',
+//     'id',
+// );
+// print_r(json_decode($data, true));
+
+$data = $wa->sendMessageTemplateAuthentication(
+    '081216667996',
+    'auth_otp_code',
     'id',
+    '123456'
 );
 print_r(json_decode($data, true));
 
