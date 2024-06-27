@@ -3,7 +3,7 @@
 /**
  * KrmPesan PHP SDK.
  *
- * @version     3.0.0
+ * @version     3.1.0
  *
  * @see         https://github.com/KrmPesan/SDK-PHP
  *
@@ -105,7 +105,7 @@ class ClientV3
             }
 
             // save path
-            $this->tokenFile = $data['tokenFile'].'/token.json';
+            $this->tokenFile = $data['tokenFile'] . '/token.json';
 
             // load token
             $this->getToken();
@@ -145,12 +145,12 @@ class ClientV3
     private function action($type, $url, $form = null, $file = null)
     {
         // setup url
-        $buildUrl = $this->apiUrl.'/'.$url;
+        $buildUrl = $this->apiUrl . '/' . $url;
 
         // set default header
         $headers = [];
         $headers[] = 'Content-Type: application/json';
-        $headers[] = 'Authorization: Bearer '.$this->token;
+        $headers[] = 'Authorization: Bearer ' . $this->token;
 
         // use custom header if not null
         if ($this->customHeader) {
@@ -221,7 +221,7 @@ class ClientV3
      */
     public function refreshToken()
     {
-        $url = 'tokens?refresh_token='.$this->refreshToken.'&device_key='.$this->deviceId;
+        $url = 'tokens?refresh_token=' . $this->refreshToken . '&device_key=' . $this->deviceId;
         $response = $this->action('GET', $url);
         $data = json_decode($response, true);
         $this->token = $data['IdToken'];
@@ -244,14 +244,14 @@ class ClientV3
             $expiredAt = isset($parseFile['expiredAt']) ? $parseFile['expiredAt'] : null;
 
             if (!$refreshToken) {
-                throw new Exception('refreshToken Not Found at '.$this->tokenFile);
+                throw new Exception('refreshToken Not Found at ' . $this->tokenFile);
             }
 
             // set refresh token
             $this->refreshToken = $refreshToken;
 
             if (!$deviceId) {
-                throw new Exception('deviceId Not Found at '.$this->tokenFile);
+                throw new Exception('deviceId Not Found at ' . $this->tokenFile);
             }
 
             // set refresh token
@@ -266,9 +266,9 @@ class ClientV3
         }
 
         $result = [
-            'idToken'      => $this->token,
+            'idToken' => $this->token,
             'refreshToken' => $this->refreshToken,
-            'expiredAt'    => $this->expiredAt,
+            'expiredAt' => $this->expiredAt,
         ];
 
         return $result;
@@ -321,8 +321,8 @@ class ClientV3
     {
         // build form
         $form = json_encode([
-            'name'        => $name,
-            'category'    => $category,
+            'name' => $name,
+            'category' => $category,
             'description' => $description,
         ]);
 
@@ -347,41 +347,43 @@ class ClientV3
     {
         // build form
         $form = json_encode([
-            'slug'     => $slug,
+            'slug' => $slug,
             'language' => $lang,
-            'message'  => $message,
-            'fields'   => $fields,
-            'header'   => isset($header) ? $header : null,
-            'footer'   => isset($footer) ? $footer : null,
-            'button'   => isset($button) ? $button : null,
+            'message' => $message,
+            'fields' => $fields,
+            'header' => isset($header) ? $header : null,
+            'footer' => isset($footer) ? $footer : null,
+            'button' => isset($button) ? $button : null,
         ]);
 
         return $this->request('POST', 'messages/template/lang', $form);
     }
 
     /**
-     * Send Message Text.
+     * Send Message Text Template with Parameter or Without Parameter.
      *
      * @param string|int $to
      * @param string     $templateLanguage
      * @param string     $templateName
-     * @param array      $body
-     *
-     * @return void
+     * @param array|null $body
      */
-    public function sendMessageTemplateText($to, $templateName, $templateLanguage, $body)
+    public function sendMessageTemplateText($to, $templateName, $templateLanguage, $body = null)
     {
         // build form
-        $form = json_encode([
-            'phone'             => $to,
-            'template_name'     => $templateName,
+        $form = [
+            'phone' => $to,
+            'template_name' => $templateName,
             'template_language' => $templateLanguage,
-            'template'          => (object) [
-                'body' => $body,
-            ],
-        ]);
+        ];
 
-        return $this->request('POST', 'messages', $form);
+        // use body if not null
+        if (isset($body) or !empty($body)) {
+            $form['template'] = (object) [
+                'body' => $body,
+            ];
+        }
+
+        return $this->request('POST', 'messages', json_encode($form));
     }
 
     /**
@@ -399,14 +401,14 @@ class ClientV3
     {
         // build form
         $form = json_encode([
-            'phone'             => $to,
-            'template_name'     => $templateName,
+            'phone' => $to,
+            'template_name' => $templateName,
             'template_language' => $templateLanguage,
-            'template'          => (object) [
-                'body'   => $body,
+            'template' => (object) [
+                'body' => $body,
                 'header' => [
                     'type' => 'image',
-                    'url'  => $image,
+                    'url' => $image,
                 ],
             ],
         ]);
@@ -429,14 +431,14 @@ class ClientV3
     {
         // build form
         $form = json_encode([
-            'phone'             => $to,
-            'template_name'     => $templateName,
+            'phone' => $to,
+            'template_name' => $templateName,
             'template_language' => $templateLanguage,
-            'template'          => (object) [
-                'body'   => $body,
+            'template' => (object) [
+                'body' => $body,
                 'header' => [
                     'type' => 'document',
-                    'url'  => $document,
+                    'url' => $document,
                 ],
             ],
         ]);
@@ -459,13 +461,13 @@ class ClientV3
     {
         // build form
         $form = json_encode([
-            'phone'             => $to,
-            'template_name'     => $templateName,
+            'phone' => $to,
+            'template_name' => $templateName,
             'template_language' => $templateLanguage,
-            'template'          => (object) [
-                'body'    => $body,
+            'template' => (object) [
+                'body' => $body,
                 'buttons' => [
-                    'url'  => $button,
+                    'url' => $button,
                 ],
             ],
         ]);
@@ -510,8 +512,8 @@ class ClientV3
         $form = json_encode([
             'phone' => $to,
             'reply' => (object) [
-                'type'    => 'image',
-                'image'   => $image,
+                'type' => 'image',
+                'image' => $image,
                 'caption' => $caption,
             ],
         ]);
@@ -533,8 +535,8 @@ class ClientV3
         $form = json_encode([
             'phone' => $to,
             'reply' => (object) [
-                'type'       => 'image',
-                'document'   => $document,
+                'type' => 'image',
+                'document' => $document,
             ],
         ]);
 
@@ -569,8 +571,8 @@ class ClientV3
 
         $presign = $this->request('POST', 'files/generate', json_encode([
             'filename' => $filename,
-            'mime'     => $filemime,
-            'expired'  => 30,
+            'mime' => $filemime,
+            'expired' => 30,
         ]));
 
         $resp = json_decode($presign, true);
@@ -600,7 +602,7 @@ class ClientV3
 
         // Check if the request was successful
         if ($response === false) {
-            throw  new Exception('Error uploading file: '.curl_error($curl));
+            throw new Exception('Error uploading file: ' . curl_error($curl));
         }
 
         // Close the cURL handle
