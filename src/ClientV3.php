@@ -3,7 +3,7 @@
 /**
  * KrmPesan PHP SDK.
  *
- * @version     3.5.0
+ * @version     3.6.0
  *
  * @see         https://github.com/KrmPesan/SDK-PHP
  *
@@ -144,21 +144,30 @@ class ClientV3
      */
     private function action($type, $url, $form = null, $file = null)
     {
+        // build curl instance
+        $ch = curl_init();
+
         // setup url
-        $buildUrl = $this->apiUrl.'/'.$url;
+        $isHTTP = (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0);
+        if ($isHTTP) {
+            $buildUrl = $url;
+        } else {
+            $buildUrl = $this->apiUrl.'/'.$url;
+        }
 
         // set default header
         $headers = [];
         $headers[] = 'Content-Type: application/json';
-        $headers[] = 'Authorization: Bearer '.$this->token;
+
+        if ($this->token) {
+            $headers[] = 'Authorization: Bearer '.$this->token;
+        }
 
         // use custom header if not null
         if ($this->customHeader) {
             $headers = $this->customHeader;
         }
 
-        // build curl instance
-        $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $buildUrl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -609,6 +618,40 @@ class ClientV3
         curl_close($curl);
 
         return $urlClean;
+    }
+
+    /**
+     * Download File from CDN.
+     *
+     * @param string $url
+     * @param string $type view or download
+     * @param string $path directory to save file
+     *
+     * @return string
+     */
+    public function getFile($url, $type = 'view', $path = null)
+    {
+        $file = $this->request('GET', "files?url=$url");
+        $decode = json_decode($file, true);
+
+        if ($type === 'view') {
+            return $decode;
+        } else {
+            // download to local
+            $filename = basename($url);
+            $fileUrl = $decode['data'];
+
+            $this->token = null;
+            $this->customHeader = [];
+
+            $download = $this->action('GET', $fileUrl);
+
+            // set path
+            $path = $path ?? __DIR__;
+            file_put_contents("$path/$filename", $download);
+
+            return $filename;
+        }
     }
 
     /**

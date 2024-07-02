@@ -47,3 +47,12 @@ print_r(json_decode($data, true));
 // upload file and get url from file
 // $url = $wa->upload('sample.png');
 // print_r($url);
+
+// return url file
+// $url = $wa->getFile("https://cdn.krmpesan.app/xxxx/2024/7/1719887002-sample.png", "download", $path);
+// print_r($url);
+
+// download and save to directory
+// $path = __DIR__;
+// $url = $wa->getFile("https://cdn.krmpesan.app/xxxx/2024/7/1719887002-sample.png", "download", $path);
+// print_r($url);
